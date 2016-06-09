@@ -13,4 +13,3 @@ The inputs:
  - A cli curl command that will accomplish the entry commit
  - A cli curl command that will accomplish the reveal
 
- 

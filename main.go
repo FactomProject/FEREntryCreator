@@ -107,7 +107,6 @@ func main() {
 		return
 	}
 
-
 	// Make an Fer Entry to send along
 	theFEREntry := new(FEREntry)
 	theFEREntry.Version = config.Version
@@ -131,7 +130,9 @@ func main() {
 		fmt.Println("Signing private key isn't parsable")
 		return
 	}
-	copy(signingPrivateKey[:], signingBytes)
+	copy(signingPrivateKey[:], signingBytes[:])
+	_ = ed.GetPublicKey(&signingPrivateKey)  // Needed to format the public half of the key set
+
 
 	// Read some values for the FEREntry from the stdIn
 	uintValue, err := readStdinUint("Enter the entry expiration height: ", "Bad exipration height", 32)
@@ -143,7 +144,6 @@ func main() {
 	uintValue, err = readStdinUint("Enter the entry priority: ", "Bad priority", 32)
 	if (err != nil) { return }
 	theFEREntry.Priority = uint32(uintValue)
-
 	uintValue, err = readStdinUint("Enter the new Factoshis Per EC: ", "Bad Factoshis Per EC", 64)
 	if (err != nil) { return }
 	theFEREntry.TargetPrice = uintValue
