@@ -14,7 +14,7 @@ import (
 
 // This is a representation of the FER data.  Basically the json of this will be the factom entry content
 type FEREntry struct {
-	ExpirationHeight       uint32 `json:"exiration_height"`
+	ExpirationHeight       uint32 `json:"expiration_height"`
 	TargetActivationHeight uint32 `json:"target_activation_height"`
 	Priority               uint32 `json:"priority"`
 	TargetPrice            uint64 `json:"target_price"`
