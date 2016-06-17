@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-// The main reads the config file, gets values from the command line for the FERENtry,
+// The main reads the config file, gets values from the command line for the FEREntry,
 // and then makes a curl commit and reveal string which it sends to a file.
 func main() {
 	entry, reveal, targetPriceInDollars, err := CreateFEREntryAndReveal()
