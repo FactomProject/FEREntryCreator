@@ -9,6 +9,7 @@ import (
 	"github.com/FactomProject/goleveldb/leveldb/errors"
 	"encoding/json"
 	"bytes"
+
 )
 
 
@@ -23,13 +24,13 @@ type FEREntry struct {
 
 
 
-func CreateFEREntryAndReveal() (Entry string, Reveal string, targetPriceInDollars float64, err error) {
+func CreateFEREntryAndReveal() (Entry string, Reveal string, targetPriceInDollars float64, newECAddress string, err error) {
 
 	// Read the config file
 	config, err := readConfigFile("FactomFER.conf")
 	if ( err != nil ) {
 		errorMessage := errors.New(" Could not find config file FactomFER.conf.\n A sample config file is below, create it if you wish:\n   PaymentPrivateKey = \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\"\n   SigningPrivateKey = \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\"\n   Version = \"1.0\"")
-		return "", "", 0.0, errorMessage
+		return "", "", 0.0, "", errorMessage
 	}
 
 	// Make an Fer Entry to send along
@@ -39,18 +40,19 @@ func CreateFEREntryAndReveal() (Entry string, Reveal string, targetPriceInDollar
 	// Create and format the payment private key
 	var paymentPrivateKey [64]byte
 	paymentBytes, err := hex.DecodeString(config.PaymentPrivateKey)
+
 	if (err != nil) {
-		return "", "", 0.0, errors.New("Payment private key isn't parsable")
+		return "", "", 0.0, "", errors.New("Payment private key isn't parsable")
 	}
 	copy(paymentPrivateKey[:], paymentBytes)
-	paymentPublicKey := new([32]byte)
-	paymentPublicKey = ed.GetPublicKey(&paymentPrivateKey)
+	//paymentPublicKey := new([32]byte)
+	//paymentPublicKey = ed.GetPublicKey(&paymentPrivateKey)
 
 	// Create and format the signing private key
 	var signingPrivateKey [64]byte
 	signingBytes, err := hex.DecodeString(config.SigningPrivateKey)
 	if (err != nil) {
-		return "", "", 0.0, errors.New("Signing private key isn't parsable")
+		return "", "", 0.0, "",errors.New("Signing private key isn't parsable")
 	}
 	copy(signingPrivateKey[:], signingBytes[:])
 	_ = ed.GetPublicKey(&signingPrivateKey)  // Needed to format the public half of the key set
@@ -71,10 +73,10 @@ func CreateFEREntryAndReveal() (Entry string, Reveal string, targetPriceInDollar
 	theFEREntry.TargetPrice = uintValue
 
 	entryJson, err := json.Marshal(theFEREntry)
+
 	if err != nil {
-		return "", "", 0.0, errors.New("Could not marshal the data into an FEREntry")
+		return "", "", 0.0, "", errors.New("Could not marshal the data into an FEREntry")
 	}
-	fmt.Println()
 
 	// Create the factom entry with the signing private key
 	signingSignature := ed.Sign(&signingPrivateKey, entryJson)
@@ -86,31 +88,38 @@ func CreateFEREntryAndReveal() (Entry string, Reveal string, targetPriceInDollar
 	e.ExtIDs = append(e.ExtIDs, signingSignature[:])
 	e.Content = entryJson
 
-
+   
+	a, err := factom.MakeECAddress(signingSignature[0:32])
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	// Create the compose and the reveal
-	entryCommitJson, err := factom.ComposeEntryCommit(paymentPublicKey, &paymentPrivateKey, e)
-	if err != nil { return "", "", 0.0, err }
+	//entryCommitJson, err := factom.ComposeEntryCommit(paymentPublicKey, signingSignature, e)
+	entryCommitJson, err := factom.ComposeEntryCommit(e, a )
+	if err != nil { return "", "", 0.0, "", err }
 	revealJson, err := factom.ComposeEntryReveal(e)
-	if err != nil { return "", "", 0.0, err }
+	if err != nil { return "", "", 0.0, "", err }
 
 	impliedFctPrice := float64(0.0)
 	if (theFEREntry.TargetPrice != 0) {
 		impliedFctPrice = 100000 / float64(theFEREntry.TargetPrice)
 	} else {
-		return "", "", 0.0, errors.New("Trying to set targetPrice to 0!")
+		return "", "", 0.0, "", errors.New("Trying to set targetPrice to 0!")
 	}
-
-	return string(entryCommitJson), string(revealJson), impliedFctPrice, nil
+	commitResp, err := factom.EncodeJSONString(entryCommitJson)
+	revealResp, err := factom.EncodeJSONString(revealJson)
+	return commitResp, revealResp, impliedFctPrice, a.PubString(), nil
 }
 
 
 
-func GetCurlOutputForComposition(entryCommitJson string, revealJson string, targetPriceInDollars float64) (output string){
+func GetCurlOutputForComposition(entryCommitJson string, revealJson string, targetPriceInDollars float64, ECAddress string) (output string){
 
 	var buffer bytes.Buffer
 
-	entry := fmt.Sprintf("    curl -i -X POST -H 'Content-Type: application/json' -d '%s' localhost:8088/v1/commit-entry\n", string(entryCommitJson))
-	reveal := fmt.Sprintf("    curl -i -X POST -H 'Content-Type: application/json' -d '%s' localhost:8088/v1/reveal-chain\n", string(revealJson))
+	entry := fmt.Sprintf("    curl -i -X POST -H 'Content-Type: application/json' -d '%s' localhost:8088/v2\n", string(entryCommitJson))
+	reveal := fmt.Sprintf("    curl -i -X POST -H 'Content-Type: application/json' -d '%s' localhost:8088/v2\n", string(revealJson))
 	pricePerDollar := fmt.Sprintf("$%.2f", targetPriceInDollars)
 
 	// Make the output file and print to the screen
@@ -125,6 +134,11 @@ func GetCurlOutputForComposition(entryCommitJson string, revealJson string, targ
 	buffer.WriteString("*\n")
 	buffer.WriteString("*      ")
 	buffer.WriteString(pricePerDollar)
+	buffer.WriteString("\n")
+	buffer.WriteString("***************************************************************************************************\n")
+	buffer.WriteString("\n")
+	buffer.WriteString("Entry Credit Address that pays for this Entry: ")
+	buffer.WriteString(ECAddress)
 	buffer.WriteString("\n")
 	buffer.WriteString("***************************************************************************************************\n")
 	buffer.WriteString("\n")

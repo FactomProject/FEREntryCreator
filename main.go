@@ -11,13 +11,13 @@ import (
 // The main reads the config file, gets values from the command line for the FEREntry,
 // and then makes a curl commit and reveal string which it sends to a file.
 func main() {
-	entry, reveal, targetPriceInDollars, err := CreateFEREntryAndReveal()
+	entry, reveal, targetPriceInDollars, ecAddress, err := CreateFEREntryAndReveal()
 	if (err != nil ) {
 		fmt.Println("Error: ", err)
 		return
 	}
 
-	compositionString := GetCurlOutputForComposition(entry, reveal, targetPriceInDollars)
+	compositionString := GetCurlOutputForComposition(entry, reveal, targetPriceInDollars,ecAddress)
 
 	fmt.Println(compositionString)
 

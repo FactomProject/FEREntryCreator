@@ -22,6 +22,7 @@ func readStdinUint(prompt string, errorMessage string, intSize int) (uint64, err
 		fmt.Println(errorMessage, "      read = ", text, "    err = ", err)
 		return 0, errors.New(fmt.Sprintf(errorMessage, "  Error: %s", err))
 	}
+	text = strings.Replace(text, "\r", "", -1)
 	text = strings.Replace(text, "\n", "", -1)
 	uintValue, err := strconv.ParseUint(text, 10, intSize)
 	if err != nil {
