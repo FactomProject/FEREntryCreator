@@ -90,7 +90,7 @@ func CreateFEREntryAndReveal() (Entry string, Reveal string, targetPriceInDollar
 	e.Content = entryJson
 
    
-	a, err := factom.MakeECAddress(signingSignature[0:32])
+	a, err := factom.MakeECAddress(paymentPrivateKey[0:32])
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -146,7 +146,6 @@ func GetCurlOutputForComposition(entryCommitJson string, revealJson string, targ
 	buffer.WriteString( entry)
 	buffer.WriteString("\n")
 	buffer.WriteString( reveal)
-	buffer.WriteString("Done\n")
 	buffer.WriteString("\n")
 
 	return buffer.String()
