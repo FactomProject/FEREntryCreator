@@ -84,7 +84,8 @@ func CreateFEREntryAndReveal() (Entry string, Reveal string, targetPriceInDollar
 
 	// Make a new factom entry and populate it
 	e := new(factom.Entry)
-	e.ChainID = "eac57815972c504ec5ae3f9e5c1fe12321a3c8c78def62528fb74cf7af5e7389"
+	e.ChainID = "111111118d918a8be684e0dac725493a75862ef96d2d3f43f84b26969329bf03"
+	//chain name: echo -n "This chain contains messages which coordinate the FCT to EC conversion rate amongst factomd nodes." | factom-cli addchain -e "FCT EC Conversion Rate Chain" -e "1950454129" EC2DKSYyRcNWf7RS963VFYgMExoHRYLHVeCfQ9PGPmNzwrcmgm2r
 	e.ExtIDs = append(e.ExtIDs, signingSignature[:])
 	e.Content = entryJson
 
