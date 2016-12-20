@@ -29,7 +29,7 @@ func CreateFEREntryAndReveal() (Entry string, Reveal string, targetPriceInDollar
 	// Read the config file
 	config, err := readConfigFile("FactomFER.conf")
 	if ( err != nil ) {
-		errorMessage := errors.New(" Could not find config file FactomFER.conf.\n A sample config file is below, create it if you wish:\n   PaymentPrivateKey = \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\"\n   SigningPrivateKey = \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\"\n   Version = \"1.0\"")
+		errorMessage := errors.New(" Could not find config file FactomFER.conf.\n A sample config file is below, create it if you wish:\n   PaymentPrivateKey = \"0000000000000000000000000000000000000000000000000000000000000000\"\n   SigningPrivateKey = \"0000000000000000000000000000000000000000000000000000000000000000\"\n   Version = \"1.0\"")
 		return "", "", 0.0, "", errorMessage
 	}
 
@@ -38,7 +38,7 @@ func CreateFEREntryAndReveal() (Entry string, Reveal string, targetPriceInDollar
 	theFEREntry.Version = config.Version
 
 	// Create and format the payment private key
-	var paymentPrivateKey [64]byte
+	var paymentPrivateKey [32]byte
 	paymentBytes, err := hex.DecodeString(config.PaymentPrivateKey)
 
 	if (err != nil) {
