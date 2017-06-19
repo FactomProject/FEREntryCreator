@@ -1,0 +1,8 @@
+package: github.com/FactomProject/FEREntryCreator
+import:
+- package: github.com/BurntSushi/toml
+- package: github.com/FactomProject/ed25519
+- package: github.com/FactomProject/factom
+- package: github.com/FactomProject/goleveldb
+  subpackages:
+  - leveldb/errors

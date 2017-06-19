@@ -1,0 +1,41 @@
+hash: a789881acb56fff7216dd4cb2b23e965c09458b022cf295c021a283e71ee6379
+updated: 2017-06-19T16:55:57.005065171-05:00
+imports:
+- name: github.com/BurntSushi/toml
+  version: b26d9c308763d68093482582cea63d69be07a0f0
+- name: github.com/FactomProject/basen
+  version: fe3947df716ebfda9847eb1b9a48f9592e06478c
+- name: github.com/FactomProject/btcutil
+  version: 43986820ccd50b2b02b83e575cb3a39c87457482
+  subpackages:
+  - base58
+- name: github.com/FactomProject/btcutilecc
+  version: d3a63a5752ecf3fbc06bd97365da752111c263df
+- name: github.com/FactomProject/ed25519
+  version: 38002c4fe7b609c2fa3144a3cc29b997b756bb4c
+  subpackages:
+  - edwards25519
+- name: github.com/FactomProject/factom
+  version: 16ac9ff6a8b3b5fb3766d8770fbc892f6641905d
+- name: github.com/FactomProject/go-bip32
+  version: 3b593af1c415abc1017648e4eb24a88c32fee0f3
+- name: github.com/FactomProject/go-bip39
+  version: d1007fb78d9a7ec65314dad412973e63caf4c527
+- name: github.com/FactomProject/go-bip44
+  version: fd672f46ddc35bb381f497f7b64c9cf34f9e0703
+- name: github.com/FactomProject/go-simplejson
+  version: aabad6e819789e569bd6aabf444c935aa9ba1e44
+- name: github.com/FactomProject/goleveldb
+  version: e7800c6976c5d75f0a9c5e9e0e2ff8086940e58f
+  subpackages:
+  - leveldb/errors
+  - leveldb/storage
+  - leveldb/util
+- name: github.com/FactomProject/netki-go-partner-client
+  version: 426acb535e66cc2f9e6226ae254555e3572fd142
+- name: golang.org/x/crypto
+  version: bed12803fa9663d7aa2c2346b0c634ad2dcd43b7
+  subpackages:
+  - pbkdf2
+  - ripemd160
+testImports: []
